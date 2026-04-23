@@ -7,44 +7,78 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace windowes_form_test
 {
-    public class Product
-    {
-        public string Type { get; set; }
-        public DateTime ProductionDate { get; set; }
-        public int ShelfLifeDays { get; set; }
-    }
+
+
     public partial class Sigin_in_form : Form
     {
+        DataTable dtUserInfo = new DataTable("UsereFilexml");
+        string usersPath = "UsereFilexml.xml"; // المسار الموحد
         public Sigin_in_form()
         {
+           
             InitializeComponent();
+            PrepareUserData(); 
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            
+ 
         }
-
-        private void buttonsignup_Click(object sender, EventArgs e)
+        private void PrepareUserData()
         {
+            // 1. تعريف الأعمدة أولاً لتهيئة الجدول في الذاكرة
+            if (dtUserInfo.Columns.Count == 0)
+            {
+                dtUserInfo.Columns.Add("Username");
+                dtUserInfo.Columns.Add("Password");
+                dtUserInfo.Columns.Add("NationalID");
+            }
 
-            Form_register register = new Form_register();
-            //hide login form after click on button of sign up
-            this.Hide();
-            register.FormClosed += (s, args) => this.Close();
-            register.ShowDialog();
+            // 2. التحقق من وجود الملف اللي إنت عملته يدويًا
+            if (File.Exists(usersPath))
+            {
+                dtUserInfo.ReadXml(usersPath); // هيقرأ الـ admin اللي إنت ضفته
+            }
         }
+
 
         private void buttonlogin_Click(object sender, EventArgs e)
         {
-            Form_Show_data_ form_Show_Data=new Form_Show_data_();
-            //hide login form after click on button of sign up
-            this.Hide();
-            form_Show_Data.FormClosed += (s, args) => this.Close();
-            form_Show_Data.ShowDialog();
+            
+            // 1. سحب البيانات اللي اليوزر كتبها في التكست بوكس
+            // (تأكد إن دي أسامي الـ TextBoxes عندك في الـ Designer)
+            string inputUser_Id = textBox_forID_Name.Text;
+            string inputPass = textBox_Pass.Text;
+
+           
+            DataRow[] foundRows = dtUserInfo.Select($"Username = '{inputUser_Id}' AND Password = '{inputPass}'");
+
+            if (foundRows.Length > 0)
+            {
+                MessageBox.Show(" Welcome " + inputUser_Id);
+                Form_Show_data_ mainDataForm = new Form_Show_data_();
+                mainDataForm.Show();
+                this.Hide();
+            }
+            else
+            {
+               
+                MessageBox.Show("Error,please check your username and password");
+            }
+        
         }
+        private void btn_signup_Click(object sender, EventArgs e)
+        {
+            Form_register form_Register = new Form_register();
+            this.Hide();
+            form_Register.FormClosed += (s, args) => this.Close();
+            form_Register.ShowDialog();
+        }
+
+        
     }
 }
