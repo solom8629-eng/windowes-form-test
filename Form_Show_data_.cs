@@ -28,6 +28,7 @@ namespace windowes_form_test
                 dtProducts.Columns.Add("ProductionDate", typeof(DateTime));
                 dtProducts.Columns.Add("ExpirationDate", typeof(DateTime));
                 dtProducts.Columns.Add("Price", typeof(double));
+                dtProducts.Columns.Add("OwnerID",typeof(int));
             }
             dataGridView1.DataSource = dtProducts;
         }
@@ -39,6 +40,17 @@ namespace windowes_form_test
                 dtProducts.Clear();
                 dtProducts.ReadXml(productsPath);
             }
+
+            // اتأكد إن السطر ده موجود عشان لو الملف لسه جديد ومفيهوش أعمدة
+            if (!dtProducts.Columns.Contains("OwnerID"))
+            {
+                dtProducts.Columns.Add("OwnerID");
+            }
+
+            DataView dv = new DataView(dtProducts);
+            // اتأكد إن المتغير GlobalUser.CurrentNationalID مش فاضي
+            dv.RowFilter = $"OwnerID = '{GlobalUser.CurrentNationalID}'";
+            dataGridView1.DataSource = dv;
         }
 
         // --- ميزة التنقل بالـ Enter ---
@@ -69,20 +81,35 @@ namespace windowes_form_test
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-        private void Save_button(object sender, EventArgs e)
+       
+
+        private void toolStripButton1_Click_Click(object sender, EventArgs e)
         {
             try
             {
+           
                 dataGridView1.EndEdit();
 
-                //كود حساب مده الصلاحيه هيكتب هنا يشباب
+                
+                foreach (DataRow row in dtProducts.Rows)
+                {
+                    
+                    if (row.RowState == DataRowState.Added || row["OwnerID"] == DBNull.Value || string.IsNullOrEmpty(row["OwnerID"].ToString()))
+                    {
+                        row["OwnerID"] = GlobalUser.CurrentNationalID;
+                    }
+                }
 
+                
                 dtProducts.WriteXml(productsPath);
-                MessageBox.Show("تم الحفظ بنجاح");
+
+                
+                MessageBox.Show("Your Data is Saved");
             }
             catch (Exception ex)
             {
-                MessageBox.Show("خطأ: " + ex.Message);
+                
+                MessageBox.Show("خطأ أثناء الحفظ: " + ex.Message);
             }
         }
     }

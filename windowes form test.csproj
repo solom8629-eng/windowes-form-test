@@ -79,6 +79,7 @@
     <Compile Include="Form_Show_data_.Designer.cs">
       <DependentUpon>Form_Show_data_.cs</DependentUpon>
     </Compile>
+    <Compile Include="GlobalUser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">

@@ -48,18 +48,21 @@ namespace windowes_form_test
 
         private void buttonlogin_Click(object sender, EventArgs e)
         {
+
+            // جوه زرار الـ Login
             
-            // 1. سحب البيانات اللي اليوزر كتبها في التكست بوكس
-            // (تأكد إن دي أسامي الـ TextBoxes عندك في الـ Designer)
             string inputUser_Id = textBox_forID_Name.Text;
             string inputPass = textBox_Pass.Text;
-
-           
             DataRow[] foundRows = dtUserInfo.Select($"Username = '{inputUser_Id}' AND Password = '{inputPass}'");
-
+           
             if (foundRows.Length > 0)
             {
-                MessageBox.Show(" Welcome " + inputUser_Id);
+                // سحب الـ NationalID والاسم من السطر اللي لقيناه
+                GlobalUser.CurrentNationalID = foundRows[0]["NationalID"].ToString();
+                GlobalUser.CurrentUserName = foundRows[0]["Username"].ToString();
+
+                MessageBox.Show("Welcome " + GlobalUser.CurrentUserName);
+
                 Form_Show_data_ mainDataForm = new Form_Show_data_();
                 mainDataForm.Show();
                 this.Hide();
@@ -67,7 +70,7 @@ namespace windowes_form_test
             else
             {
                
-                MessageBox.Show("Error,please check your username and password");
+                MessageBox.Show("You don't have account please sign up frist");
             }
         
         }

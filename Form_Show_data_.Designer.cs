@@ -112,7 +112,7 @@
             this.toolStripButton1_Click.TabIndex = 6;
             this.toolStripButton1_Click.Text = "Save update";
             this.toolStripButton1_Click.UseVisualStyleBackColor = true;
-            this.toolStripButton1_Click.Click += new System.EventHandler(this.Save_button);
+            this.toolStripButton1_Click.Click += new System.EventHandler(this.toolStripButton1_Click_Click);
             // 
             // button1
             // 
