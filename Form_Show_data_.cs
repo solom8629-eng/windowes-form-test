@@ -29,6 +29,7 @@ namespace windowes_form_test
                 dtProducts.Columns.Add("ExpirationDate", typeof(DateTime));
                 dtProducts.Columns.Add("Price", typeof(double));
                 dtProducts.Columns.Add("OwnerID",typeof(int));
+                dtProducts.Columns.Add("Number of Items", typeof(int));
             }
             dataGridView1.DataSource = dtProducts;
         }
@@ -81,36 +82,59 @@ namespace windowes_form_test
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
-       
+
 
         private void toolStripButton1_Click_Click(object sender, EventArgs e)
         {
             try
             {
-           
                 dataGridView1.EndEdit();
 
-                
+                // 1. هنعمل جدول مؤقت بنفس شكل الجدول الأصلي عشان نخزن فيه التكرار
+                DataTable dtFinalSave = dtProducts.Clone();
+
                 foreach (DataRow row in dtProducts.Rows)
                 {
-                    
-                    if (row.RowState == DataRowState.Added || row["OwnerID"] == DBNull.Value || string.IsNullOrEmpty(row["OwnerID"].ToString()))
+                    // قراءة العدد اللي اليوزر دخله (لو سابه فاضي بنعتبره 1)
+                    int count = 1;
+                    if (row["Number of Items"] != DBNull.Value && int.TryParse(row["Number of Items"].ToString(), out int res))
                     {
-                        row["OwnerID"] = GlobalUser.CurrentNationalID;
+                        count = res > 0 ? res : 1;
+                    }
+
+                    // 2. تكرار إضافة المنتج بناءً على العدد
+                    for (int i = 0; i < count; i++)
+                    {
+                        DataRow newRow = dtFinalSave.NewRow();
+                        newRow.ItemArray = row.ItemArray; // بننسخ كل البيانات (الاسم، السعر، التاريخ)
+
+                        // التأكد من ربط المنتج باليوزر الحالي
+                        if (newRow["OwnerID"] == DBNull.Value || string.IsNullOrEmpty(newRow["OwnerID"].ToString()))
+                        {
+                            newRow["OwnerID"] = GlobalUser.CurrentNationalID;
+                        }
+
+                        dtFinalSave.Rows.Add(newRow);
                     }
                 }
 
-                
-                dtProducts.WriteXml(productsPath);
+                // 3. حفظ الجدول النهائي اللي فيه التكرار في ملف XML
+                dtFinalSave.WriteXml(productsPath);
 
-                
-                MessageBox.Show("Your Data is Saved");
+                MessageBox.Show("Data saved successfully ");
+
+                // إعادة تحميل البيانات عشان تظهر الفلترة صح
+                LoadDataFromFile();
             }
             catch (Exception ex)
             {
-                
-                MessageBox.Show("خطأ أثناء الحفظ: " + ex.Message);
+                MessageBox.Show("Error occurred while saving: " + ex.Message);
             }
+        }
+
+        private void Form_Show_data__FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

@@ -57,7 +57,7 @@ namespace windowes_form_test
 
                 // 4. الحفظ
                 dtUsers.WriteXml(path);
-                // 5. اختياري: فضي الخانات بعد الحفظ عشان لو حبيت تسجل يوزر تاني
+               
                 txtUsername.Clear();
                 txtPassword.Clear();
                 txtNationalID.Clear();

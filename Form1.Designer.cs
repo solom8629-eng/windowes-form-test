@@ -121,6 +121,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(139, 22);
             this.textBox1.TabIndex = 12;
+           
             // 
             // Sigin_in_form
             // 

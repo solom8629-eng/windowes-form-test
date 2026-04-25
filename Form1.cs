@@ -82,6 +82,6 @@ namespace windowes_form_test
             form_Register.ShowDialog();
         }
 
-        
+       
     }
 }

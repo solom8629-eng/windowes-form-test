@@ -135,6 +135,7 @@
             this.Controls.Add(this.dataGridView1);
             this.Name = "Form_Show_data_";
             this.Text = "Data";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Form_Show_data__FormClosed);
             ((System.ComponentModel.ISupportInitialize)(this.productsBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.productsBindingSource1)).EndInit();
