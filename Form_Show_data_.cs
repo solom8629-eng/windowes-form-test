@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Windows.Forms;
 using System.IO;
+using ClosedXML.Excel;
 
 namespace windowes_form_test
 {
@@ -14,127 +15,282 @@ namespace windowes_form_test
         public Form_Show_data_()
         {
             InitializeComponent();
-            SetupTables();
             LoadDataFromFile();
-        }
-
-        private void SetupTables()
-        {
-            if (dtProducts.Columns.Count == 0)
-            {
-                dataGridView1.AutoGenerateColumns = true;
-                dtProducts.Columns.Add("Name");
-                dtProducts.Columns.Add("Type");
-                dtProducts.Columns.Add("ProductionDate", typeof(DateTime));
-                dtProducts.Columns.Add("ExpirationDate", typeof(DateTime));
-                dtProducts.Columns.Add("Price", typeof(double));
-                dtProducts.Columns.Add("OwnerID",typeof(int));
-                dtProducts.Columns.Add("Number of Items", typeof(int));
-            }
-            dataGridView1.DataSource = dtProducts;
         }
 
         private void LoadDataFromFile()
         {
+            // Always build a fresh table with all columns as STRING
+            // This prevents XML auto-detecting numbers as Int32
+            DataTable freshTable = new DataTable("Products");
+            freshTable.Columns.Add("Name", typeof(string));
+            freshTable.Columns.Add("Type", typeof(string));
+            freshTable.Columns.Add("ProductionDate", typeof(string));
+            freshTable.Columns.Add("ExpirationDate", typeof(string));
+            freshTable.Columns.Add("Price", typeof(string));
+            freshTable.Columns.Add("OwnerID", typeof(string));
+            freshTable.Columns.Add("Number of Items", typeof(string));
+
             if (File.Exists(productsPath))
-            {
-                dtProducts.Clear();
-                dtProducts.ReadXml(productsPath);
-            }
+                freshTable.ReadXml(productsPath);
 
-            // اتأكد إن السطر ده موجود عشان لو الملف لسه جديد ومفيهوش أعمدة
-            if (!dtProducts.Columns.Contains("OwnerID"))
-            {
-                dtProducts.Columns.Add("OwnerID");
-            }
-
-            DataView dv = new DataView(dtProducts);
-            // اتأكد إن المتغير GlobalUser.CurrentNationalID مش فاضي
+            // Filter: show only current user's rows
+            DataView dv = new DataView(freshTable);
             dv.RowFilter = $"OwnerID = '{GlobalUser.CurrentNationalID}'";
-            dataGridView1.DataSource = dv;
+
+            // Bind filtered data to grid and to dtProducts
+            dtProducts = dv.ToTable();
+            dataGridView1.DataSource = dtProducts;
         }
 
-        // --- ميزة التنقل بالـ Enter ---
+        // Navigation with Enter key
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
         {
-            if (keyData == Keys.Enter && (dataGridView1.Focused || dataGridView1.IsCurrentCellInEditMode))
+            if (keyData == Keys.Enter &&
+                (dataGridView1.Focused || dataGridView1.IsCurrentCellInEditMode))
             {
-                dataGridView1.EndEdit(); // حفظ التعديل الحالي قبل الانتقال
-
+                dataGridView1.EndEdit();
                 if (dataGridView1.CurrentCell != null)
                 {
                     int col = dataGridView1.CurrentCell.ColumnIndex;
                     int row = dataGridView1.CurrentCell.RowIndex;
-
-                    // لو مش في آخر عمود، انقل للخلية اللي على اليمين
                     if (col < dataGridView1.Columns.Count - 1)
-                    {
                         dataGridView1.CurrentCell = dataGridView1[col + 1, row];
-                    }
-                    // لو في آخر عمود، انقل لأول عمود في السطر اللي بعده
                     else if (row < dataGridView1.Rows.Count - 1)
-                    {
                         dataGridView1.CurrentCell = dataGridView1[0, row + 1];
-                    }
-                    return true; // إخبار الويندوز إننا عالجنا الضغطة خلاص
+                    return true;
                 }
             }
             return base.ProcessCmdKey(ref msg, keyData);
         }
 
+        private void Form_Show_data__FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Application.Exit();
+        }
 
-
-        private void toolStripButton1_Click_Click(object sender, EventArgs e)
+        // SAVE button
+        private void button1_Click(object sender, EventArgs e)
         {
             try
             {
                 dataGridView1.EndEdit();
 
-                // 1. هنعمل جدول مؤقت بنفس شكل الجدول الأصلي عشان نخزن فيه التكرار
-                DataTable dtFinalSave = dtProducts.Clone();
-
+                // Validate required fields
                 foreach (DataRow row in dtProducts.Rows)
                 {
-                    // قراءة العدد اللي اليوزر دخله (لو سابه فاضي بنعتبره 1)
-                    int count = 1;
-                    if (row["Number of Items"] != DBNull.Value && int.TryParse(row["Number of Items"].ToString(), out int res))
+                    if (row.RowState != DataRowState.Deleted)
                     {
-                        count = res > 0 ? res : 1;
-                    }
-
-                    // 2. تكرار إضافة المنتج بناءً على العدد
-                    for (int i = 0; i < count; i++)
-                    {
-                        DataRow newRow = dtFinalSave.NewRow();
-                        newRow.ItemArray = row.ItemArray; // بننسخ كل البيانات (الاسم، السعر، التاريخ)
-
-                        // التأكد من ربط المنتج باليوزر الحالي
-                        if (newRow["OwnerID"] == DBNull.Value || string.IsNullOrEmpty(newRow["OwnerID"].ToString()))
+                        if (string.IsNullOrWhiteSpace(row["Name"].ToString()) ||
+                            string.IsNullOrWhiteSpace(row["Price"].ToString()) ||
+                            string.IsNullOrWhiteSpace(row["Type"].ToString()) ||
+                            string.IsNullOrWhiteSpace(row["Number of Items"].ToString()))
                         {
-                            newRow["OwnerID"] = GlobalUser.CurrentNationalID;
+                            MessageBox.Show(
+                                "Required fields: Name, Price, Type, and Number of Items",
+                                "Missing Data", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
                         }
-
-                        dtFinalSave.Rows.Add(newRow);
                     }
                 }
 
-                // 3. حفظ الجدول النهائي اللي فيه التكرار في ملف XML
-                dtFinalSave.WriteXml(productsPath);
+                // Load ALL existing products from file (all users)
+                DataTable allProducts = new DataTable("Products");
+                allProducts.Columns.Add("Name", typeof(string));
+                allProducts.Columns.Add("Type", typeof(string));
+                allProducts.Columns.Add("ProductionDate", typeof(string));
+                allProducts.Columns.Add("ExpirationDate", typeof(string));
+                allProducts.Columns.Add("Price", typeof(string));
+                allProducts.Columns.Add("OwnerID", typeof(string));
+                allProducts.Columns.Add("Number of Items", typeof(string));
 
-                MessageBox.Show("Data saved successfully ");
+                if (File.Exists(productsPath))
+                    allProducts.ReadXml(productsPath);
 
-                // إعادة تحميل البيانات عشان تظهر الفلترة صح
+                // Remove current user's old rows from the full table
+                for (int i = allProducts.Rows.Count - 1; i >= 0; i--)
+                {
+                    if (allProducts.Rows[i]["OwnerID"].ToString() == GlobalUser.CurrentNationalID)
+                        allProducts.Rows.RemoveAt(i);
+                }
+
+                // Add current user's updated rows (no duplication loop)
+                foreach (DataRow row in dtProducts.Rows)
+                {
+                    if (row.RowState != DataRowState.Deleted)
+                    {
+                        DataRow newRow = allProducts.NewRow();
+                        newRow["Name"] = row["Name"].ToString();
+                        newRow["Type"] = row["Type"].ToString();
+                        newRow["ProductionDate"] = row["ProductionDate"].ToString();
+                        newRow["ExpirationDate"] = row["ExpirationDate"].ToString();
+                        newRow["Price"] = row["Price"].ToString();
+                        newRow["OwnerID"] = GlobalUser.CurrentNationalID;
+                        newRow["Number of Items"] = row["Number of Items"].ToString();
+                        allProducts.Rows.Add(newRow);
+                    }
+                }
+
+                // Save everything back to file
+                allProducts.WriteXml(productsPath);
+
+                MessageBox.Show("Data saved successfully!",
+                    "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
                 LoadDataFromFile();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error occurred while saving: " + ex.Message);
+                MessageBox.Show("Error while saving: " + ex.Message);
             }
         }
 
-        private void Form_Show_data__FormClosed(object sender, FormClosedEventArgs e)
+        // SHOW REPORT button
+        private void button2_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            try
+            {
+                dataGridView1.EndEdit();
+
+                SaveFileDialog saveDialog = new SaveFileDialog();
+                saveDialog.Filter = "Excel Files|*.xlsx";
+                saveDialog.Title = "Save Report As";
+                saveDialog.FileName = "WarehouseReport_" + DateTime.Today.ToString("yyyy-MM-dd");
+
+                if (saveDialog.ShowDialog() != DialogResult.OK) return;
+
+                // dtProducts is already filtered to current user only
+                DataTable sourceTable = dtProducts;
+
+                using (var workbook = new XLWorkbook())
+                {
+                    var sheet = workbook.Worksheets.Add("Products Report");
+
+                    int totalCols = sourceTable.Columns.Count;
+
+                    // Friendly header names
+                    var friendlyHeaders = new Dictionary<string, string>
+                    {
+                        { "Name",            "Name"            },
+                        { "Type",            "Type"            },
+                        { "ProductionDate",  "Production Date" },
+                        { "ExpirationDate",  "Expiration Date" },
+                        { "Price",           "Price"           },
+                        { "OwnerID",         "Owner ID"        },
+                        { "Number of Items", "Number of Items" }
+                    };
+
+                    // Write existing column headers
+                    for (int col = 0; col < totalCols; col++)
+                    {
+                        string colName = sourceTable.Columns[col].ColumnName;
+                        var cell = sheet.Cell(1, col + 1);
+                        cell.Value = friendlyHeaders.ContainsKey(colName)
+                            ? friendlyHeaders[colName] : colName;
+                        StyleHeader(cell);
+                    }
+
+                    // Write 2 extra headers
+                    StyleHeader(sheet.Cell(1, totalCols + 1));
+                    sheet.Cell(1, totalCols + 1).Value = "Days Until Expiry";
+                    StyleHeader(sheet.Cell(1, totalCols + 2));
+                    sheet.Cell(1, totalCols + 2).Value = "Offer Suggestion";
+
+                    // Write data rows
+                    for (int row = 0; row < sourceTable.Rows.Count; row++)
+                    {
+                        DataRow dataRow = sourceTable.Rows[row];
+                        int daysLeft = GetDaysLeft(dataRow);
+                        string type = dataRow["Type"].ToString();
+                        string daysLabel = GetDaysUntilExpiryLabel(daysLeft);
+                        string offer = GetOfferSuggestion(type, daysLeft);
+
+                        // Row color based on urgency
+                        XLColor rowColor = XLColor.NoColor;
+                        if (daysLeft < 0) rowColor = XLColor.LightCoral;
+                        else if (daysLeft <= 2) rowColor = XLColor.OrangeRed;
+                        else if (daysLeft <= 5) rowColor = XLColor.LightYellow;
+
+                        for (int col = 0; col < totalCols; col++)
+                        {
+                            var cellValue = dataRow[col];
+                            var cell = sheet.Cell(row + 2, col + 1);
+                            cell.Value = (cellValue == DBNull.Value || cellValue == null)
+                                ? "" : cellValue.ToString();
+                            if (rowColor != XLColor.NoColor)
+                                cell.Style.Fill.BackgroundColor = rowColor;
+                        }
+
+                        // Days Until Expiry cell
+                        var daysCell = sheet.Cell(row + 2, totalCols + 1);
+                        daysCell.Value = daysLabel;
+                        daysCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        if (rowColor != XLColor.NoColor)
+                            daysCell.Style.Fill.BackgroundColor = rowColor;
+
+                        // Offer Suggestion cell
+                        var offerCell = sheet.Cell(row + 2, totalCols + 2);
+                        offerCell.Value = offer;
+                        offerCell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                        if (offer != "No offer")
+                        {
+                            offerCell.Style.Font.Bold = true;
+                            offerCell.Style.Font.FontColor = XLColor.DarkRed;
+                        }
+                        if (rowColor != XLColor.NoColor)
+                            offerCell.Style.Fill.BackgroundColor = rowColor;
+                    }
+
+                    sheet.Columns().AdjustToContents();
+                    workbook.SaveAs(saveDialog.FileName);
+                }
+
+                var open = MessageBox.Show(
+                    "Report saved!\nOpen it now?",
+                    "Success", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+                if (open == DialogResult.Yes)
+                    System.Diagnostics.Process.Start(saveDialog.FileName);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error creating report: " + ex.Message);
+            }
+        }
+
+        // Helpers
+        private int GetDaysLeft(DataRow row)
+        {
+            if (row["ExpirationDate"] == DBNull.Value ||
+                string.IsNullOrWhiteSpace(row["ExpirationDate"].ToString()))
+                return int.MaxValue;
+            DateTime expiry = Convert.ToDateTime(row["ExpirationDate"]);
+            return (expiry.Date - DateTime.Today).Days;
+        }
+
+        private string GetDaysUntilExpiryLabel(int daysLeft)
+        {
+            if (daysLeft == int.MaxValue) return "No Expiry";
+            if (daysLeft < 0) return "Expired (" + Math.Abs(daysLeft) + " days ago)";
+            if (daysLeft == 0) return "Expires Today!";
+            return daysLeft + " days left";
+        }
+
+        private string GetOfferSuggestion(string type, int daysLeft)
+        {
+            if (!type.ToLower().Contains("perishable")) return "No offer";
+            if (daysLeft < 0) return "Remove from shelf";
+            if (daysLeft <= 2) return "Apply 40% discount";
+            if (daysLeft <= 5) return "Apply 20% discount";
+            return "No offer";
+        }
+
+        private void StyleHeader(IXLCell cell)
+        {
+            cell.Style.Font.Bold = true;
+            cell.Style.Fill.BackgroundColor = XLColor.DarkBlue;
+            cell.Style.Font.FontColor = XLColor.White;
+            cell.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
         }
     }
 }

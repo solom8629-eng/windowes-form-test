@@ -46,7 +46,7 @@
             this.labelFullName.Size = new System.Drawing.Size(152, 35);
             this.labelFullName.TabIndex = 5;
             this.labelFullName.Text = "  Full Name";
-            this.labelFullName.Click += new System.EventHandler(this.labelFullName_Click);
+           
             // 
             // label_Password_for_sign_up
             // 

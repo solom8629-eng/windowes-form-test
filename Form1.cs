@@ -33,9 +33,9 @@ namespace windowes_form_test
             // 1. تعريف الأعمدة أولاً لتهيئة الجدول في الذاكرة
             if (dtUserInfo.Columns.Count == 0)
             {
-                dtUserInfo.Columns.Add("Username");
-                dtUserInfo.Columns.Add("Password");
-                dtUserInfo.Columns.Add("NationalID");
+                dtUserInfo.Columns.Add("Username", typeof(string));
+                dtUserInfo.Columns.Add("Password", typeof(string));
+                dtUserInfo.Columns.Add("NationalID", typeof(string));
             }
 
             // 2. التحقق من وجود الملف اللي إنت عملته يدويًا
@@ -49,10 +49,33 @@ namespace windowes_form_test
         private void buttonlogin_Click(object sender, EventArgs e)
         {
 
-            // جوه زرار الـ Login
-            
-            string inputUser_Id = textBox_forID_Name.Text;
-            string inputPass = textBox_Pass.Text;
+            // ── VALIDATION ────────────────────────────────────────────────
+            string inputUser_Id = textBox_forID_Name.Text.Trim();
+            string inputPass = textBox_Pass.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(inputUser_Id) ||
+                !System.Text.RegularExpressions.Regex.IsMatch(inputUser_Id, @"^[a-zA-Z0-9]+$"))
+            {
+                MessageBox.Show(
+                    "Username must contain English letters or numbers only.",
+                    "Invalid Username", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                textBox_forID_Name.Clear();
+                textBox_forID_Name.Focus();
+                return;
+            }
+
+            if (string.IsNullOrWhiteSpace(inputPass) ||
+                !System.Text.RegularExpressions.Regex.IsMatch(inputPass, @"^[a-zA-Z0-9]+$"))
+            {
+                MessageBox.Show(
+                    "Password must contain English letters or numbers only.",
+                    "Invalid Password", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                textBox_Pass.Clear();
+                textBox_Pass.Focus();
+                return;
+            }
+
+            // ── END VALIDATION ────────────────────────────────────────────
             DataRow[] foundRows = dtUserInfo.Select($"Username = '{inputUser_Id}' AND Password = '{inputPass}'");
            
             if (foundRows.Length > 0)
@@ -67,6 +90,7 @@ namespace windowes_form_test
                 mainDataForm.Show();
                 this.Hide();
             }
+
             else
             {
                
@@ -81,7 +105,5 @@ namespace windowes_form_test
             form_Register.FormClosed += (s, args) => this.Close();
             form_Register.ShowDialog();
         }
-
-       
-    }
+     }
 }

@@ -8,7 +8,7 @@ namespace windowes_form_test
 {
     public static class GlobalUser
     {
-      
+       
         public static string CurrentNationalID;
         public static string CurrentUserName;
     }
