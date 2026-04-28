@@ -25,11 +25,11 @@ namespace windowes_form_test
             DataTable freshTable = new DataTable("Products");
             freshTable.Columns.Add("Name", typeof(string));
             freshTable.Columns.Add("Type", typeof(string));
-            freshTable.Columns.Add("ProductionDate", typeof(string));
-            freshTable.Columns.Add("ExpirationDate", typeof(string));
-            freshTable.Columns.Add("Price", typeof(string));
+            freshTable.Columns.Add("ProductionDate", typeof(DateTime));
+            freshTable.Columns.Add("ExpirationDate", typeof(DateTime));
+            freshTable.Columns.Add("Price", typeof(decimal));
             freshTable.Columns.Add("OwnerID", typeof(string));
-            freshTable.Columns.Add("Number of Items", typeof(string));
+            freshTable.Columns.Add("Number of Items", typeof(int));
 
             if (File.Exists(productsPath))
                 freshTable.ReadXml(productsPath);
@@ -69,8 +69,8 @@ namespace windowes_form_test
             Application.Exit();
         }
 
-        // SAVE button
-        private void button1_Click(object sender, EventArgs e)
+       
+        private void button1_Click(object sender, EventArgs e)//زرار الحفظ
         {
             try
             {
@@ -84,7 +84,7 @@ namespace windowes_form_test
                         if (string.IsNullOrWhiteSpace(row["Name"].ToString()) ||
                             string.IsNullOrWhiteSpace(row["Price"].ToString()) ||
                             string.IsNullOrWhiteSpace(row["Type"].ToString()) ||
-                            string.IsNullOrWhiteSpace(row["Number of Items"].ToString()))
+                            string.IsNullOrWhiteSpace(row["Number of Items"].ToString()))//expiry and production
                         {
                             MessageBox.Show(
                                 "Required fields: Name, Price, Type, and Number of Items",
@@ -100,15 +100,15 @@ namespace windowes_form_test
                 allProducts.Columns.Add("Type", typeof(string));
                 allProducts.Columns.Add("ProductionDate", typeof(string));
                 allProducts.Columns.Add("ExpirationDate", typeof(string));
-                allProducts.Columns.Add("Price", typeof(string));
+                allProducts.Columns.Add("Price", typeof(decimal));
                 allProducts.Columns.Add("OwnerID", typeof(string));
-                allProducts.Columns.Add("Number of Items", typeof(string));
+                allProducts.Columns.Add("Number of Items", typeof(int));
 
                 if (File.Exists(productsPath))
                     allProducts.ReadXml(productsPath);
 
                 // Remove current user's old rows from the full table
-                for (int i = allProducts.Rows.Count - 1; i >= 0; i--)
+                for (int i = allProducts.Rows.Count - 1; i >= 0; i--)//بعدين 
                 {
                     if (allProducts.Rows[i]["OwnerID"].ToString() == GlobalUser.CurrentNationalID)
                         allProducts.Rows.RemoveAt(i);
@@ -122,11 +122,18 @@ namespace windowes_form_test
                         DataRow newRow = allProducts.NewRow();
                         newRow["Name"] = row["Name"].ToString();
                         newRow["Type"] = row["Type"].ToString();
-                        newRow["ProductionDate"] = row["ProductionDate"].ToString();
-                        newRow["ExpirationDate"] = row["ExpirationDate"].ToString();
-                        newRow["Price"] = row["Price"].ToString();
+                        if (DateTime.TryParse(row["ProductionDate"].ToString(), out DateTime prodDate))
+                        {
+                            newRow["ProductionDate"] = prodDate.ToString("yyyy-MM-dd");
+                        }
+
+                        if (DateTime.TryParse(row["ExpirationDate"].ToString(), out DateTime expDate))
+                        {
+                            newRow["ExpirationDate"] = expDate.ToString("yyyy-MM-dd");
+                        }
+                        newRow["Price"] = decimal.Parse(row["Price"].ToString());
                         newRow["OwnerID"] = GlobalUser.CurrentNationalID;
-                        newRow["Number of Items"] = row["Number of Items"].ToString();
+                        newRow["Number of Items"] = int.Parse(row["Number of Items"].ToString());
                         allProducts.Rows.Add(newRow);
                     }
                 }
@@ -169,7 +176,7 @@ namespace windowes_form_test
                     int totalCols = sourceTable.Columns.Count;
 
                     // Friendly header names
-                    var friendlyHeaders = new Dictionary<string, string>
+                    var friendlyHeaders = new Dictionary<string, string>//بعدين
                     {
                         { "Name",            "Name"            },
                         { "Type",            "Type"            },
@@ -181,11 +188,11 @@ namespace windowes_form_test
                     };
 
                     // Write existing column headers
-                    for (int col = 0; col < totalCols; col++)
+                    for (int col = 0; col < totalCols; col++)//بعدين
                     {
                         string colName = sourceTable.Columns[col].ColumnName;
-                        var cell = sheet.Cell(1, col + 1);
-                        cell.Value = friendlyHeaders.ContainsKey(colName)
+                        var cell = sheet.Cell(1, col +1);
+                        cell.Value = friendlyHeaders.ContainsKey(colName)//بعدين
                             ? friendlyHeaders[colName] : colName;
                         StyleHeader(cell);
                     }
@@ -208,8 +215,8 @@ namespace windowes_form_test
                         // Row color based on urgency
                         XLColor rowColor = XLColor.NoColor;
                         if (daysLeft < 0) rowColor = XLColor.LightCoral;
-                        else if (daysLeft <= 2) rowColor = XLColor.OrangeRed;
-                        else if (daysLeft <= 5) rowColor = XLColor.LightYellow;
+                        else if (daysLeft <= 20) rowColor = XLColor.OrangeRed;
+                        else if (daysLeft <= 50) rowColor = XLColor.LightYellow;
 
                         for (int col = 0; col < totalCols; col++)
                         {
@@ -261,11 +268,12 @@ namespace windowes_form_test
         // Helpers
         private int GetDaysLeft(DataRow row)
         {
-            if (row["ExpirationDate"] == DBNull.Value ||
-                string.IsNullOrWhiteSpace(row["ExpirationDate"].ToString()))
-                return int.MaxValue;
+            
+            DateTime production = Convert.ToDateTime(row["ProductionDate"]);
             DateTime expiry = Convert.ToDateTime(row["ExpirationDate"]);
-            return (expiry.Date - DateTime.Today).Days;
+
+            // طرح تاريخ الإنتاج من تاريخ الانتهاء للحصول على مدة الصلاحية الكلية
+            return (expiry.Date - production.Date).Days;
         }
 
         private string GetDaysUntilExpiryLabel(int daysLeft)
@@ -280,8 +288,8 @@ namespace windowes_form_test
         {
             if (!type.ToLower().Contains("perishable")) return "No offer";
             if (daysLeft < 0) return "Remove from shelf";
-            if (daysLeft <= 2) return "Apply 40% discount";
-            if (daysLeft <= 5) return "Apply 20% discount";
+            if (daysLeft <= 50) return "Apply 40% discount";
+            if (daysLeft <= 20) return "Apply 20% discount";
             return "No offer";
         }
 

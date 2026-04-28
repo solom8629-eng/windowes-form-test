@@ -29,11 +29,6 @@ namespace windowes_form_test
                 dtUsers.Columns.Add("NationalID");
             }
         }
-
-       
-       
-       
-
         private void Submit_Button_Click(object sender, EventArgs e)
         {
             try
