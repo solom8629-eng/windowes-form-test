@@ -41,27 +41,27 @@
             // labelFullName
             // 
             this.labelFullName.Font = new System.Drawing.Font("Mongolian Baiti", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelFullName.Location = new System.Drawing.Point(104, 165);
+            this.labelFullName.Location = new System.Drawing.Point(89, 165);
             this.labelFullName.Name = "labelFullName";
-            this.labelFullName.Size = new System.Drawing.Size(134, 25);
+            this.labelFullName.Size = new System.Drawing.Size(149, 25);
             this.labelFullName.TabIndex = 5;
             this.labelFullName.Text = "  Full Name";
             // 
             // label_Password_for_sign_up
             // 
             this.label_Password_for_sign_up.Font = new System.Drawing.Font("Mongolian Baiti", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label_Password_for_sign_up.Location = new System.Drawing.Point(104, 239);
+            this.label_Password_for_sign_up.Location = new System.Drawing.Point(89, 239);
             this.label_Password_for_sign_up.Name = "label_Password_for_sign_up";
-            this.label_Password_for_sign_up.Size = new System.Drawing.Size(127, 25);
+            this.label_Password_for_sign_up.Size = new System.Drawing.Size(145, 25);
             this.label_Password_for_sign_up.TabIndex = 6;
             this.label_Password_for_sign_up.Text = "  Password";
             // 
             // labelNationalID
             // 
             this.labelNationalID.Font = new System.Drawing.Font("Mongolian Baiti", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelNationalID.Location = new System.Drawing.Point(104, 105);
+            this.labelNationalID.Location = new System.Drawing.Point(89, 108);
             this.labelNationalID.Name = "labelNationalID";
-            this.labelNationalID.Size = new System.Drawing.Size(144, 22);
+            this.labelNationalID.Size = new System.Drawing.Size(149, 25);
             this.labelNationalID.TabIndex = 10;
             this.labelNationalID.Text = "  National ID";
             // 
@@ -81,21 +81,21 @@
             // 
             // txtNationalID
             // 
-            this.txtNationalID.Location = new System.Drawing.Point(255, 108);
+            this.txtNationalID.Location = new System.Drawing.Point(264, 108);
             this.txtNationalID.Name = "txtNationalID";
             this.txtNationalID.Size = new System.Drawing.Size(209, 22);
             this.txtNationalID.TabIndex = 12;
             // 
             // txtUsername
             // 
-            this.txtUsername.Location = new System.Drawing.Point(255, 168);
+            this.txtUsername.Location = new System.Drawing.Point(264, 165);
             this.txtUsername.Name = "txtUsername";
             this.txtUsername.Size = new System.Drawing.Size(209, 22);
             this.txtUsername.TabIndex = 13;
             // 
             // txtPassword
             // 
-            this.txtPassword.Location = new System.Drawing.Point(255, 242);
+            this.txtPassword.Location = new System.Drawing.Point(264, 242);
             this.txtPassword.Name = "txtPassword";
             this.txtPassword.Size = new System.Drawing.Size(209, 22);
             this.txtPassword.TabIndex = 15;
@@ -105,7 +105,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackgroundImage = ((System.Drawing.Image)(resources.GetObject("$this.BackgroundImage")));
-            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
             this.ClientSize = new System.Drawing.Size(926, 614);
             this.Controls.Add(this.txtPassword);
             this.Controls.Add(this.txtUsername);
