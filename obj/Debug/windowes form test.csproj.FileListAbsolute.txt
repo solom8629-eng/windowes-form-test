@@ -1,0 +1,40 @@
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\UsereFilexml.xml
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\windowes form test.exe.config
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\windowes form test.exe
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\windowes form test.pdb
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\ClosedXML.dll
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\ClosedXML.Parser.dll
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\DocumentFormat.OpenXml.dll
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\DocumentFormat.OpenXml.Framework.dll
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\ExcelNumberFormat.dll
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\Microsoft.Bcl.HashCode.dll
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\RBush.dll
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\SixLabors.Fonts.dll
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\System.Buffers.dll
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\System.Memory.dll
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\System.Numerics.Vectors.dll
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\ClosedXML.pdb
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\ClosedXML.xml
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\ClosedXML.Parser.xml
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\DocumentFormat.OpenXml.xml
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\DocumentFormat.OpenXml.Framework.xml
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\ExcelNumberFormat.xml
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\Microsoft.Bcl.HashCode.xml
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\RBush.xml
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\SixLabors.Fonts.xml
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\System.Buffers.xml
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\System.Memory.xml
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\System.Numerics.Vectors.xml
+C:\Users\mylap\source\repos\windows test\SIMS-main\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\mylap\source\repos\windows test\SIMS-main\obj\Debug\windowes form test.csproj.AssemblyReference.cache
+C:\Users\mylap\source\repos\windows test\SIMS-main\obj\Debug\windowes_form_test.Sigin_in_form.resources
+C:\Users\mylap\source\repos\windows test\SIMS-main\obj\Debug\windowes_form_test.Form_register.resources
+C:\Users\mylap\source\repos\windows test\SIMS-main\obj\Debug\windowes_form_test.Form_Show_data_.resources
+C:\Users\mylap\source\repos\windows test\SIMS-main\obj\Debug\windowes_form_test.Properties.Resources.resources
+C:\Users\mylap\source\repos\windows test\SIMS-main\obj\Debug\windowes form test.csproj.GenerateResource.cache
+C:\Users\mylap\source\repos\windows test\SIMS-main\obj\Debug\windowes form test.csproj.CoreCompileInputs.cache
+C:\Users\mylap\source\repos\windows test\SIMS-main\obj\Debug\windowes.3CF6B0F7.Up2Date
+C:\Users\mylap\source\repos\windows test\SIMS-main\obj\Debug\windowes form test.exe
+C:\Users\mylap\source\repos\windows test\SIMS-main\obj\Debug\windowes form test.pdb
+C:\Users\mylap\source\repos\windows test\SIMS-main\obj\Debug\windowes form test.exe.config

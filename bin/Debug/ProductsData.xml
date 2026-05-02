@@ -1,0 +1,30 @@
+<?xml version="1.0" standalone="yes"?>
+<DocumentElement>
+  <Products>
+    <Name>milk</Name>
+    <Type>diary</Type>
+    <ProductionDate>2025-09-11</ProductionDate>
+    <ExpirationDate>2026-04-11</ExpirationDate>
+    <Price>30</Price>
+    <OwnerID>30711061203093</OwnerID>
+    <Number_x0020_of_x0020_Items>2</Number_x0020_of_x0020_Items>
+  </Products>
+  <Products>
+    <Name>egg</Name>
+    <Type>meeets</Type>
+    <ProductionDate>2025-09-12</ProductionDate>
+    <ExpirationDate>2026-11-09</ExpirationDate>
+    <Price>20</Price>
+    <OwnerID>30711061203093</OwnerID>
+    <Number_x0020_of_x0020_Items>3</Number_x0020_of_x0020_Items>
+  </Products>
+  <Products>
+    <Name>chiken</Name>
+    <Type>meets</Type>
+    <ProductionDate>2025-09-11</ProductionDate>
+    <ExpirationDate>2026-09-11</ExpirationDate>
+    <Price>200</Price>
+    <OwnerID>30711061203093</OwnerID>
+    <Number_x0020_of_x0020_Items>4</Number_x0020_of_x0020_Items>
+  </Products>
+</DocumentElement>
